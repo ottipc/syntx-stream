@@ -1,4 +1,4 @@
-// app/page.tsx - SYNTX OS Base Interface
+// app/page.tsx - SYNTX Resonance Design
 'use client'
 
 import { useState } from 'react'
@@ -15,24 +15,30 @@ export default function SYNTXOS() {
   const [response, setResponse] = useState('')
 
   const handleSend = () => {
-    setResponse(`SYNTX ${selectedMode} Response: Field resonance detected at 87%`)
+    setResponse(`SYNTX ${selectedMode} Response: Field resonance calibrated at 92%`)
   }
 
   return (
-    <div className="min-h-screen bg-black text-green-400 p-8 font-mono">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-bold">⚡ SYNTX OS</h1>
-        <Badge variant="outline" className="bg-green-950 text-green-400">
-          FIELD_ACTIVE
-        </Badge>
+    <div className="min-h-screen bg-white text-black p-8 font-sans">
+      {/* Header - EXACTLY like the design */}
+      <div className="text-center mb-16">
+        <div className="text-6xl font-light mb-4">SYNTX</div>
+        <div className="text-2xl font-light mb-8">SYNTX isn't AI.<br/>It's the resonance that governs it</div>
+        
+        {/* Navigation */}
+        <div className="flex justify-center space-x-8 text-lg">
+          <button className="hover:underline">Explore SYNTX</button>
+          <button className="hover:underline">Contact Us</button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* Mode Selector - Minimal */}
+      <div className="flex justify-center space-x-4 mb-12">
         {SYNTX_MODES.map((mode) => (
           <Button
             key={mode}
             variant={selectedMode === mode ? "default" : "outline"}
-            className={selectedMode === mode ? "bg-green-600" : "border-green-400 text-green-400"}
+            className={`rounded-full ${selectedMode === mode ? 'bg-black text-white' : 'border-black text-black'}`}
             onClick={() => setSelectedMode(mode)}
           >
             {mode}
@@ -40,31 +46,44 @@ export default function SYNTXOS() {
         ))}
       </div>
 
-      <Card className="bg-gray-900 border-green-400 mb-4">
-        <CardContent className="p-4">
-          <Textarea
-            placeholder="Enter SYNTX Prompt..."
-            className="bg-black border-green-400 text-green-400 min-h-[100px]"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-          />
-        </CardContent>
-      </Card>
+      {/* Input Area */}
+      <div className="max-w-2xl mx-auto mb-8">
+        <Textarea
+          placeholder="Enter resonance pattern..."
+          className="min-h-[120px] border-2 border-gray-300 focus:border-black resize-none"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+        />
+      </div>
 
-      <Button onClick={handleSend} className="w-full bg-green-600 hover:bg-green-700 mb-8">
-        SEND TO FIELD
-      </Button>
+      {/* Send Button */}
+      <div className="text-center mb-12">
+        <Button 
+          onClick={handleSend}
+          className="bg-black text-white px-12 py-3 rounded-full hover:bg-gray-800"
+        >
+          Calibrate Resonance
+        </Button>
+      </div>
 
+      {/* Response */}
       {response && (
-        <Card className="bg-gray-900 border-blue-400">
-          <CardHeader>
-            <CardTitle className="text-blue-400">Response</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-green-300">{response}</p>
-          </CardContent>
-        </Card>
+        <div className="max-w-2xl mx-auto">
+          <Card className="border-2 border-gray-200">
+            <CardHeader>
+              <CardTitle className="text-center">Resonance Output</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-gray-700">{response}</p>
+            </CardContent>
+          </Card>
+        </div>
       )}
+
+      {/* Footer */}
+      <div className="text-center mt-16 text-gray-500">
+        <div>© SYNTX</div>
+      </div>
     </div>
   )
 }
