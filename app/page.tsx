@@ -9,6 +9,7 @@ import {
   Play, Pause, RefreshCw, Download
 } from 'lucide-react'
 import { SYNTXVisuals } from '@/components/syntx/syntx-visuals'
+import { SYNTXNetwork } from '@/components/syntx/syntx-network'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -347,7 +348,18 @@ export default function SYNTXOS() {
                 </div>
               )},
 
-              
+              // Network Tab ersetzen:
+              {activeTab === 'network' && (
+                  <div className="space-y-6">
+                    <div className="text-center mb-8">
+                      <h2 className="text-3xl font-bold text-white mb-2">SYNTX Network Matrix</h2>
+                      <p className="text-gray-400">
+                        Interactive 3D field resonance visualization with real-time connections
+                      </p>
+                    </div>
+                    <SYNTXNetwork fields={allFields} />
+              </div>
+  )},
               {activeTab !== 'datagrid' && (
                 <div className="text-center py-16">
                   <div className="text-4xl mb-4">
