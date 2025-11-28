@@ -8,6 +8,7 @@ import {
   Network, BarChart3, Filter, Settings,
   Play, Pause, RefreshCw, Download
 } from 'lucide-react'
+import { SYNTXVisuals } from '@/components/syntx/syntx-visuals'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -334,6 +335,19 @@ export default function SYNTXOS() {
               )}
 
               {/* Other Tabs */}
+              {activeTab === 'analytics' && (
+                  <div className="space-y-6">
+                  <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold text-white mb-2">SYNTX Analytics</h2>
+                  <p className="text-gray-400">
+                          Real-time field resonance visualization and temporal analysis
+                  </p>
+                </div>
+                <SYNTXVisuals />
+                </div>
+              )},
+
+              
               {activeTab !== 'datagrid' && (
                 <div className="text-center py-16">
                   <div className="text-4xl mb-4">
