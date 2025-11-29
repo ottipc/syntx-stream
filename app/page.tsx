@@ -12,7 +12,7 @@ import {
 import { SYNTXVisuals } from '@/components/syntx/syntx-visuals'
 import { SYNTXNetwork } from '@/components/syntx/syntx-network'
 import { CyberLogo} from '@/components/syntx/cyber-logo'
-
+import { AuthGate } from '@/components/syntx/syntx-auth-gate'
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
 interface Field {
@@ -165,6 +165,7 @@ export default function SYNTXOS() {
   }
 
   return (
+    <AuthGate>
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white p-4 font-sans">
       {/* HEADER - UNVERÄNDERT */}
       <div className="max-w-8xl mx-auto mb-8">
@@ -416,5 +417,6 @@ export default function SYNTXOS() {
         <div>© SYNTX FIELD RESONANCE SYSTEM • {health?.feld_count || 0} ACTIVE FIELDS</div>
       </div>
     </div>
+  </AuthGate>
   )
 }

@@ -55,6 +55,8 @@ export function SYNTXNetwork() {
 
     loadFields()
   }, [])
+  const animationRef = useRef<number | undefined>(undefined)
+
 
   // Cyberdark Farbpalette
   const COLORS = {
