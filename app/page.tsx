@@ -17,6 +17,7 @@ import { AuthGate } from '@/components/syntx/syntx-auth-gate'
 import { HealthHeartbeat, LiveQueueMonitor } from '@/components/syntx/pulse'
 import { SyntxVsNormal } from '@/components/syntx/evolution'
 import { ScorePredictor, MissingFieldsAnalysis, KeywordCombinations } from '@/components/syntx/intelligence'
+import { QueueResonance, DriftMonitor, TopicDistribution } from '@/components/syntx/resonanz'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -337,10 +338,11 @@ export default function SYNTXOS() {
                 <h2 className="text-3xl font-bold bg-gradient-to-r from-pink-400 to-rose-400 bg-clip-text text-transparent mb-2">SYNTX RESONANZ</h2>
                 <p className="text-gray-400">Field Analysis & Drift Monitor</p>
               </div>
-              <div className="text-center py-16 text-gray-500">
-                <Waves className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>Resonanz Components Coming...</p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <QueueResonance />
+                <TopicDistribution />
               </div>
+              <DriftMonitor />
             </div>
           )}
 
