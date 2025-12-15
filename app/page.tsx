@@ -21,6 +21,7 @@ import { QueueResonance, DriftMonitor, TopicDistribution } from '@/components/sy
 import { ScoreDistribution, TrendsChart, WrapperComparison, CostTracker, PerformanceMetrics, SuccessRate, CompleteDashboardView, TopicsDeepAnalytics, SuccessByWrapper, GenerationProgress, PromptsTableView, FeldPrompts } from '@/components/syntx/analytics'
 import { QueueStatusCard } from '@/components/syntx/dashboard'
 import { PromptExplorer } from '@/components/syntx/explorer'
+import { MatrixRain, ParticleField, CursorTrail, GlitchText } from '@/components/syntx/effects'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -152,15 +153,21 @@ export default function SYNTXOS() {
 
   return (
     <AuthGate>
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white p-4 font-sans">
+    {/* CYBER EFFECTS LAYER */}
+    <MatrixRain />
+    <ParticleField />
+    <CursorTrail />
+    <div className="scan-lines" />
+    
+    <div className="min-h-screen gradient-flow text-white p-4 font-sans">
       {/* HEADER */}
       <div className="max-w-8xl mx-auto mb-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <div className={`text-4xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent transition-all duration-1000 ${pulse ? 'scale-105 brightness-125' : 'scale-100'}`}>
+              <div className={`text-4xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent transition-all duration-1000 neon-pulse ${pulse ? 'scale-105 brightness-125' : 'scale-100'}`}>
                 <CyberLogo />
-                SYNTX
+                <GlitchText text="SYNTX" />
               </div>
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg blur opacity-30 animate-pulse"></div>
             </div>
