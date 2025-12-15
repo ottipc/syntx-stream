@@ -18,7 +18,8 @@ import { HealthHeartbeat, LiveQueueMonitor } from '@/components/syntx/pulse'
 import { SyntxVsNormal } from '@/components/syntx/evolution'
 import { ScorePredictor, MissingFieldsAnalysis, KeywordCombinations } from '@/components/syntx/intelligence'
 import { QueueResonance, DriftMonitor, TopicDistribution } from '@/components/syntx/resonanz'
-import { ScoreDistribution, TrendsChart, WrapperComparison, CostTracker } from '@/components/syntx/analytics'
+import { ScoreDistribution, TrendsChart, WrapperComparison, CostTracker, PerformanceMetrics, SuccessRate } from '@/components/syntx/analytics'
+import { QueueStatusCard } from '@/components/syntx/dashboard'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -257,6 +258,9 @@ export default function SYNTXOS() {
                 <h2 className="text-3xl font-bold text-white mb-2">SYNTX Live Dashboard</h2>
                 <p className="text-gray-400">Real-time queue monitoring and system health</p>
               </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <QueueStatusCard />
+              </div>
               <QueueDashboard />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                 <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
@@ -309,6 +313,10 @@ export default function SYNTXOS() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                 <WrapperComparison />
                 <CostTracker />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <PerformanceMetrics />
+                <SuccessRate />
               </div>
               <SYNTXVisuals />
             </div>
