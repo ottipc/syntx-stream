@@ -8,7 +8,7 @@ import {
   Activity, Zap, TrendingUp, Database, 
   Network, BarChart3, Filter, Settings,
   Play, Pause, RefreshCw, Download,
-  Heart, Brain, Waves, GitBranch
+  Heart, Brain, Waves, GitBranch, Search
 } from 'lucide-react'
 import { SYNTXVisuals } from '@/components/syntx/syntx-visuals'
 import { SYNTXNetwork } from '@/components/syntx/syntx-network'
@@ -20,6 +20,7 @@ import { ScorePredictor, MissingFieldsAnalysis, KeywordCombinations } from '@/co
 import { QueueResonance, DriftMonitor, TopicDistribution } from '@/components/syntx/resonanz'
 import { ScoreDistribution, TrendsChart, WrapperComparison, CostTracker, PerformanceMetrics, SuccessRate } from '@/components/syntx/analytics'
 import { QueueStatusCard } from '@/components/syntx/dashboard'
+import { PromptExplorer } from '@/components/syntx/explorer'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -144,7 +145,8 @@ export default function SYNTXOS() {
     { id: 'evolution', label: 'Evolution', icon: GitBranch, color: 'green' },
     { id: 'intelligence', label: 'Intelligence', icon: Brain, color: 'orange' },
     { id: 'resonanz', label: 'Resonanz', icon: Waves, color: 'pink' },
-    { id: 'network', label: 'Network', icon: Network, color: 'indigo' }
+    { id: 'network', label: 'Network', icon: Network, color: 'indigo' },
+    { id: 'explorer', label: 'Explorer', icon: Search, color: 'cyan' }
   ]
 
   return (
@@ -371,6 +373,17 @@ export default function SYNTXOS() {
                 <p className="text-gray-400">Interactive field resonance visualization</p>
               </div>
               <SYNTXNetwork />
+            </div>
+          )}
+
+          {/* EXPLORER Tab - THE ULTIMATE PROMPT BROWSER */}
+          {activeTab === 'explorer' && (
+            <div className="space-y-6">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2">SYNTX EXPLORER</h2>
+                <p className="text-gray-400">Complete Prompt & Response Database • 686 Entries</p>
+              </div>
+              <PromptExplorer />
             </div>
           )}
         </div>
