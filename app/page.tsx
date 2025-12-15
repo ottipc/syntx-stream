@@ -18,6 +18,7 @@ import { HealthHeartbeat, LiveQueueMonitor } from '@/components/syntx/pulse'
 import { SyntxVsNormal } from '@/components/syntx/evolution'
 import { ScorePredictor, MissingFieldsAnalysis, KeywordCombinations } from '@/components/syntx/intelligence'
 import { QueueResonance, DriftMonitor, TopicDistribution } from '@/components/syntx/resonanz'
+import { ScoreDistribution, TrendsChart, WrapperComparison, CostTracker } from '@/components/syntx/analytics'
 
 const SYNTX_MODES = ['TRUE_RAW', 'CYBERDARK', 'SIGMA', 'FIELD_HYGIENE'] as const
 
@@ -300,6 +301,14 @@ export default function SYNTXOS() {
               <div className="text-center mb-8">
                 <h2 className="text-3xl font-bold text-white mb-2">SYNTX Analytics</h2>
                 <p className="text-gray-400">Real-time field resonance visualization</p>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <ScoreDistribution />
+                <TrendsChart />
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <WrapperComparison />
+                <CostTracker />
               </div>
               <SYNTXVisuals />
             </div>
