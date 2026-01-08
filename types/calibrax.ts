@@ -90,6 +90,7 @@ export interface ParsedFields {
 
 export interface CalibrationStages {
   gpt_system_prompt: string;
+  gpt_user_prompt: string;
   gpt_output_meta_prompt: string;
   mistral_input: string;
   mistral_output: string;
