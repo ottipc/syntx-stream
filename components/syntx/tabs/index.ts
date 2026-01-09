@@ -9,3 +9,4 @@ export { ResonanzTab } from './ResonanzTab';
 export { NetworkTab } from './NetworkTab';
 export { ExplorerTab } from './ExplorerTab';
 export { SystemTab } from './SystemTab';
+export { BirthTab } from './BirthTab'
