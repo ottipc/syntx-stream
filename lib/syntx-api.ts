@@ -1,8 +1,3 @@
-/**
- * 🌊 SYNTX API CLIENT
- * TypeScript Client für Strom-Orchestrator API
- */
-
 const API_BASE = process.env.NEXT_PUBLIC_SYNTX_API || 'https://dev.syntx-system.com/api/strom';
 
 export interface FeldGewichtung {
@@ -11,137 +6,61 @@ export interface FeldGewichtung {
 
 export interface StromParameter {
   felder_topics: FeldGewichtung;
-  felder_styles: FeldGewichtung;
-  strom_anzahl: number;
-  sprache: string;
-}
-
-export interface StromErgebnis {
-  erfolg: boolean;
-  topic: string;
-  style: string;
-  sprache: string;
-  strom_text: string | null;
-  qualitaet: number | null;
-  kosten: number | null;
-  dauer_ms: number;
-}
-
-export interface SystemStatus {
-  status: string;
-  felder_verfuegbar: {
-    topics: number;
-    kategorien: number;
-    styles: number;
-  };
-  model: string;
-  max_stroeme_pro_anfrage: number;
+  styles: string[];
+  sprachen: string[];
+  anzahl?: number;
+  modell?: string;
 }
 
 export class SyntxAPI {
-  
-  static async getStatus(): Promise<SystemStatus> {
-    const res = await fetch(`${API_BASE}/strom/status`);
+  // ✅ HEALTH
+  static async getStatus() {
+    const res = await fetch(`${API_BASE}/health`);
     if (!res.ok) throw new Error('Failed to fetch status');
     return res.json();
   }
-  
-  static async getVerfuegbareFelder() {
-    const res = await fetch(`${API_BASE}/felder/verfuegbar`);
-    if (!res.ok) throw new Error('Failed to fetch felder');
-    return res.json();
-  }
-  
+
+  // ✅ FELD - Topics (FIXED: /feld/topics instead of /kalibrierung/topics)
   static async getTopics() {
-    const res = await fetch(`${API_BASE}/kalibrierung/topics`);
+    const res = await fetch(`${API_BASE}/feld/topics`);
     if (!res.ok) throw new Error('Failed to fetch topics');
     return res.json();
   }
-  
-  static async updateTopics(kategorie: string, topics: string[], aktion: 'set' | 'add' | 'remove') {
-    const res = await fetch(`${API_BASE}/kalibrierung/topics`, {
+
+  // ✅ TOPIC WEIGHTS
+  static async getTopicWeights() {
+    const res = await fetch(`${API_BASE}/topic-weights`);
+    if (!res.ok) throw new Error('Failed to fetch topic weights');
+    return res.json();
+  }
+
+  static async saveTopicWeights(weights: Record<string, number>) {
+    const res = await fetch(`${API_BASE}/topic-weights`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ kategorie, topics, aktion })
+      body: JSON.stringify(weights)
     });
-    if (!res.ok) throw new Error('Failed to update topics');
+    if (!res.ok) throw new Error('Failed to save topic weights');
     return res.json();
   }
-  
-  static async getStyles() {
-    const res = await fetch(`${API_BASE}/kalibrierung/styles`);
-    if (!res.ok) throw new Error('Failed to fetch styles');
+
+  static async getTopicWeight(topicName: string) {
+    const res = await fetch(`${API_BASE}/topic-weights/${encodeURIComponent(topicName)}`);
+    if (!res.ok) throw new Error('Failed to fetch topic weight');
     return res.json();
   }
-  
-  static async updateStyles(styles: string[], aktion: 'set' | 'add' | 'remove') {
-    const res = await fetch(`${API_BASE}/kalibrierung/styles`, {
+
+  static async updateTopicWeight(topicName: string, weight: number) {
+    const res = await fetch(`${API_BASE}/topic-weights/${encodeURIComponent(topicName)}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ styles, aktion })
+      body: JSON.stringify({ weight })
     });
-    if (!res.ok) throw new Error('Failed to update styles');
+    if (!res.ok) throw new Error('Failed to update topic weight');
     return res.json();
   }
-  
-  static async getOpenAIConfig() {
-    const res = await fetch(`${API_BASE}/kalibrierung/openai`);
-    if (!res.ok) throw new Error('Failed to fetch OpenAI config');
-    return res.json();
-  }
-  
-  static async updateOpenAIConfig(config: {
-    model: string;
-    temperature: number;
-    top_p: number;
-    max_tokens: number;
-    max_refusal_retries: number;
-  }) {
-    const res = await fetch(`${API_BASE}/kalibrierung/openai`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    });
-    if (!res.ok) throw new Error('Failed to update OpenAI config');
-    return res.json();
-  }
-  
-  static async getCronJobs() {
-    const res = await fetch(`${API_BASE}/kalibrierung/cron`);
-    if (!res.ok) throw new Error('Failed to fetch cron jobs');
-    return res.json();
-  }
-  
-  static async addCronJob(job: {
-    name: string;
-    rhythmus: string;
-    wrapper?: string;
-    batch_groesse?: number;
-    typ: 'producer' | 'consumer';
-  }) {
-    const res = await fetch(`${API_BASE}/kalibrierung/cron`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(job)
-    });
-    if (!res.ok) throw new Error('Failed to add cron job');
-    return res.json();
-  }
-  
-  static async deleteCronJob(pattern: string) {
-    const res = await fetch(`${API_BASE}/kalibrierung/cron/${pattern}`, {
-      method: 'DELETE'
-    });
-    if (!res.ok) throw new Error('Failed to delete cron job');
-    return res.json();
-  }
-  
-  static async getResonanzParameter() {
-    const res = await fetch(`${API_BASE}/resonanz/parameter`);
-    if (!res.ok) throw new Error('Failed to fetch resonanz parameter');
-    return res.json();
-  }
-  
+
+  // ✅ STROM DISPATCH
   static async dispatchStrom(params: StromParameter) {
     const res = await fetch(`${API_BASE}/strom/dispatch`, {
       method: 'POST',
@@ -152,36 +71,37 @@ export class SyntxAPI {
     return res.json();
   }
 
-  // 🌊 TOPIC WEIGHTS
-  static async getTopicWeights() {
-    const res = await fetch(`${API_BASE}/topic-weights`);
-    if (!res.ok) throw new Error('Failed to fetch topic weights');
+  // ✅ ANALYTICS
+  static async getAnalytics() {
+    const res = await fetch(`${API_BASE}/analytics/complete-dashboard`);
+    if (!res.ok) throw new Error('Failed to fetch analytics');
     return res.json();
   }
-  
-  static async saveTopicWeights(weights: Record<string, number>) {
-    const res = await fetch(`${API_BASE}/topic-weights`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ weights })
-    });
-    if (!res.ok) throw new Error('Failed to save topic weights');
+
+  static async getTopicsAnalytics() {
+    const res = await fetch(`${API_BASE}/analytics/topics`);
+    if (!res.ok) throw new Error('Failed to fetch topics analytics');
     return res.json();
   }
-  
-  static async getTopicWeight(topicName: string) {
-    const res = await fetch(`${API_BASE}/topic-weights/${encodeURIComponent(topicName)}`);
-    if (!res.ok) throw new Error('Failed to fetch topic weight');
+
+  // ✅ EVOLUTION
+  static async getSyntxVsNormal() {
+    const res = await fetch(`${API_BASE}/evolution/syntx-vs-normal`);
+    if (!res.ok) throw new Error('Failed to fetch evolution data');
     return res.json();
   }
-  
-  static async updateTopicWeight(topicName: string, weight: number) {
-    const res = await fetch(`${API_BASE}/topic-weights/${encodeURIComponent(topicName)}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ weight })
-    });
-    if (!res.ok) throw new Error('Failed to update topic weight');
+
+  // ✅ MONITORING
+  static async getLiveQueue() {
+    const res = await fetch(`${API_BASE}/monitoring/live-queue`);
+    if (!res.ok) throw new Error('Failed to fetch live queue');
+    return res.json();
+  }
+
+  // ✅ RESONANZ
+  static async getResonanzSystem() {
+    const res = await fetch(`${API_BASE}/resonanz/system`);
+    if (!res.ok) throw new Error('Failed to fetch resonanz system');
     return res.json();
   }
 }
