@@ -61,7 +61,7 @@ export function GlobalEvolutionTimeline() {
   const minScore = Math.min(...data.progress.map(g => g.avg_score));
 
   return (
-    <div className="relative bg-black rounded-3xl border-4 border-purple-400 overflow-hidden shadow-2xl shadow-purple-500/50">
+    <div className="relative bg-black rounded-3xl border-4 border-purple-400 overflow-hidden shadow-[0_0_40px_rgba(purple,0.4)]">
       {/* Animated circuit pattern */}
       <motion.div 
         className="absolute inset-0 opacity-10"

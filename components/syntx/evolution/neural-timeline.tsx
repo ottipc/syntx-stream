@@ -48,7 +48,7 @@ export function NeuralTimeline() {
   };
 
   return (
-    <div className="relative bg-black rounded-3xl border-4 border-purple-400 overflow-hidden shadow-2xl shadow-purple-500/50 p-8">
+    <div className="relative bg-black rounded-3xl shadow-[0_0_20px_rgba(168,85,247,0.3)] overflow-hidden shadow-[0_0_40px_rgba(purple,0.4)] p-8">
       {/* Static Noise Background */}
       <div 
         className="absolute inset-0 opacity-[0.02] pointer-events-none"

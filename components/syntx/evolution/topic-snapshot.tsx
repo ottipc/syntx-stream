@@ -55,7 +55,7 @@ export function TopicSnapshotTrending() {
   };
 
   return (
-    <div className="relative bg-black rounded-3xl border-4 border-orange-400 overflow-hidden shadow-2xl shadow-orange-500/50">
+    <div className="relative bg-black rounded-3xl border-4 border-orange-400 overflow-hidden shadow-[0_0_40px_rgba(orange,0.4)]">
       <div className="relative p-8">
         <div className="flex items-center gap-4 mb-8">
           <BarChart3 className="text-orange-400" size={32} />

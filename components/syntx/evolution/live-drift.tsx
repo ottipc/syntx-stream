@@ -56,7 +56,7 @@ export function LiveDriftField() {
   };
 
   return (
-    <div className="relative bg-black rounded-3xl border-4 border-red-400 overflow-hidden shadow-2xl shadow-red-500/50">
+    <div className="relative bg-black rounded-3xl border-4 border-red-400 overflow-hidden shadow-[0_0_40px_rgba(red,0.4)]">
       <motion.div 
         className="absolute inset-0 opacity-5"
         animate={{ 
