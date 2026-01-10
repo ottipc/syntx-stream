@@ -283,7 +283,7 @@ export default function SYNTXOS() {
             </div>
           )}
           {activeTab === 'birth' && <BirthTab />}
-          {activeTab === 'dashboard' && <DashboardTab stats={stats} health={health} />}
+          {activeTab === 'dashboard' && <DashboardTab />}
           {activeTab === 'datagrid' && <DataGridTab fields={allFields} isLoading={isLoading} onFieldSelect={setSelectedField} />}
           {activeTab === 'analytics' && <AnalyticsTab />}
           {activeTab === 'evolution' && <EvolutionTab />}
