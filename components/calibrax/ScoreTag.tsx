@@ -3,35 +3,34 @@
 import { mapDriftColor } from '@/lib/calibrax/mapDriftColor';
 
 interface ScoreTagProps {
-  quality: number;
-  drift: number;
+  quality: number; // 0-100 (overall score)
+  drift: number;   // 0-100 (inverse drift for display)
   status: 'completed' | 'failed' | 'running';
   compact?: boolean;
 }
 
 export function ScoreTag({ quality, drift, status, compact = false }: ScoreTagProps) {
-  const driftColor = mapDriftColor(drift);
-  const driftPercent = (drift * 100).toFixed(1);
-
+  const driftColor = mapDriftColor(quality); // Use quality for color mapping
+  
   return (
     <div className="flex items-center gap-2">
       {/* Quality Score */}
       <div
         className="px-3 py-1 rounded-lg text-sm font-mono"
         style={{
-          background: quality >= 90 
+          background: quality >= 80 
             ? 'rgba(0, 255, 136, 0.2)' 
-            : quality >= 70 
+            : quality >= 50 
             ? 'rgba(255, 215, 0, 0.2)' 
             : 'rgba(255, 0, 85, 0.2)',
-          borderLeft: `3px solid ${quality >= 90 ? '#00FF88' : quality >= 70 ? '#FFD700' : '#FF0055'}`
+          borderLeft: `3px solid ${quality >= 80 ? '#00FF88' : quality >= 50 ? '#FFD700' : '#FF0055'}`
         }}
       >
-        <span className="text-gray-400">Q:</span>
-        <span className="ml-1 font-bold">{quality}</span>
+        <span className="text-gray-400">Score:</span>
+        <span className="ml-1 font-bold">{quality}%</span>
       </div>
 
-      {/* Drift Score */}
+      {/* Status Badge */}
       <div
         className="px-3 py-1 rounded-lg text-sm font-mono relative overflow-hidden"
         style={{
@@ -40,10 +39,13 @@ export function ScoreTag({ quality, drift, status, compact = false }: ScoreTagPr
           boxShadow: `0 0 ${driftColor.glow * 10}px ${driftColor.color}40`
         }}
       >
-        <span className="text-gray-400">D:</span>
-        <span className="ml-1 font-bold">{driftPercent}%</span>
-        {!compact && (
-          <span className="ml-2 text-xs opacity-70">{driftColor.label}</span>
+        <span className="font-bold" style={{ color: driftColor.color }}>
+          {driftColor.label}
+        </span>
+        {!compact && drift > 0 && (
+          <span className="ml-2 text-xs opacity-70">
+            Drift: {drift.toFixed(0)}%
+          </span>
         )}
       </div>
 

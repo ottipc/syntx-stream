@@ -23,6 +23,7 @@ export function InspectorDrawer({ run, onClose }: InspectorDrawerProps) {
   if (!run) return null;
 
   const timestamp = new Date(run.timestamp).toLocaleString('de-DE');
+  const duration = (run.meta.duration_ms / 1000).toFixed(2);
 
   const toggleStage = (stage: string) => {
     setExpandedStages(prev => ({ ...prev, [stage]: !prev[stage] }));
@@ -33,24 +34,23 @@ export function InspectorDrawer({ run, onClose }: InspectorDrawerProps) {
       isOpen={!!run}
       onClose={onClose}
       title="🔱 CALIBRATION INSPECTOR"
-      subtitle={`${run.cron_id} • ${timestamp}`}
+      subtitle={`${run.cron_data.modell} • ${timestamp}`}
       width="full"
       showLogo={true}
     >
       {/* Scores Section */}
       <div className="mb-6">
         <ScoreTag
-          quality={run.result.avg_quality}
-          drift={run.result.drift}
-          status={run.result.status}
+          quality={run.scores.overall}
+          drift={run.scores.overall < 50 ? (100 - run.scores.overall) : 0}
+          status={run.meta.success ? 'completed' : 'failed'}
         />
       </div>
 
       {/* Config Info */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <InfoCard label="Model" value={run.cron_data.modell} />
         <InfoCard label="Fields" value={Object.keys(run.cron_data.felder).length.toString()} />
-        <InfoCard label="Prompts" value={run.cron_data.anzahl.toString()} />
       </div>
 
       {/* 5 STAGES */}
@@ -123,10 +123,10 @@ export function InspectorDrawer({ run, onClose }: InspectorDrawerProps) {
 
       {/* Result Stats */}
       <div className="grid grid-cols-4 gap-3 mt-6 pt-6 border-t border-gray-800">
-        <StatCard label="Generated" value={run.result.generated.toString()} color="green" />
-        <StatCard label="Failed" value={run.result.failed.toString()} color="red" />
-        <StatCard label="Duration" value={`${(run.result.duration_ms / 1000).toFixed(2)}s`} color="blue" />
-        <StatCard label="Cost" value={`$${run.result.cost.toFixed(4)}`} color="yellow" />
+        <StatCard label="Overall" value={`${run.scores.overall}%`} color="cyan" />
+        <StatCard label="Completeness" value={`${run.scores.field_completeness}%`} color="green" />
+        <StatCard label="Structure" value={`${run.scores.structure_adherence}%`} color="blue" />
+        <StatCard label="Duration" value={`${duration}s`} color="yellow" />
       </div>
     </CyberModal>
   );
@@ -160,6 +160,7 @@ function FieldDisplay({ name, content }: { name: string; content: string }) {
 // Stat Card Component
 function StatCard({ label, value, color }: { label: string; value: string; color: string }) {
   const colorMap: Record<string, string> = {
+    cyan: 'border-cyan-500/30 bg-cyan-900/10',
     green: 'border-green-500/30 bg-green-900/10',
     red: 'border-red-500/30 bg-red-900/10',
     blue: 'border-blue-500/30 bg-blue-900/10',

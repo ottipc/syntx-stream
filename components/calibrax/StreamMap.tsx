@@ -60,7 +60,7 @@ export function StreamMap() {
       <div className="space-y-4">
         {filteredCalibrations.map((run, index) => (
           <StreamRow
-            key={`${run.cron_id}-${index}`}
+            key={`${run.timestamp}-${index}`}
             run={run}
             index={index}
             onClick={() => setSelectedRun(run)}

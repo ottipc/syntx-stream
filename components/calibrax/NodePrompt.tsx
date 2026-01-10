@@ -59,10 +59,6 @@ export function NodePrompt({ data, timestamp, onClick }: NodePromptProps) {
             <span className="text-gray-400">Fields:</span>
             <span className="text-purple-300 font-mono font-bold">{fieldCount}</span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-gray-400">Prompts:</span>
-            <span className="text-purple-300 font-mono font-bold">{data.anzahl}</span>
-          </div>
         </div>
       </div>
     </motion.div>

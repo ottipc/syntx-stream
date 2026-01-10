@@ -1,8 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Zap, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
-import { useState } from 'react';
+import { X, Clock, Zap, CheckCircle, Target } from 'lucide-react';
 import Image from 'next/image';
 import type { CalibrationRun } from '@/types/calibrax';
 import { MetadataView } from './stages/MetadataView';
@@ -21,8 +20,6 @@ interface StageDetailModalProps {
 }
 
 export function StageDetailModal({ isOpen, onClose, stage, run }: StageDetailModalProps) {
-  const [copied, setCopied] = useState(false);
-
   const stageConfig = {
     'metadata': { title: 'METADATA', emoji: '📋', color: 'purple' },
     'gpt-input': { title: 'GPT INPUT', emoji: '🧠', color: 'blue' },
@@ -33,12 +30,7 @@ export function StageDetailModal({ isOpen, onClose, stage, run }: StageDetailMod
 
   const config = stageConfig[stage];
   const timestamp = new Date(run.timestamp).toLocaleString('de-DE');
-
-  const handleCopy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  const duration = (run.meta.duration_ms / 1000).toFixed(2);
 
   return (
     <AnimatePresence>
@@ -83,23 +75,62 @@ export function StageDetailModal({ isOpen, onClose, stage, run }: StageDetailMod
                   </div>
 
                   <div className="grid grid-cols-5 gap-3">
-                    <CyberStatCard icon={<Clock className="w-5 h-5" />} label="Timestamp" value={timestamp} color="blue" />
-                    <CyberStatCard icon={<Zap className="w-5 h-5" />} label="Duration" value={`${(run.result.duration_ms / 1000).toFixed(2)}s`} color="yellow" />
-                    <CyberStatCard icon={<DollarSign className="w-5 h-5" />} label="Cost" value={`$${run.result.cost.toFixed(4)}`} color="green" />
-                    <CyberStatCard icon={<CheckCircle className="w-5 h-5" />} label="Quality" value={run.result.avg_quality.toString()} color="cyan" />
-                    <CyberStatCard icon={<AlertCircle className="w-5 h-5" />} label="Drift" value={`${(run.result.drift * 100).toFixed(1)}%`} color="purple" />
+                    <CyberStatCard 
+                      icon={<Clock className="w-5 h-5" />} 
+                      label="Timestamp" 
+                      value={timestamp} 
+                      color="blue" 
+                    />
+                    <CyberStatCard 
+                      icon={<Zap className="w-5 h-5" />} 
+                      label="Duration" 
+                      value={`${duration}s`} 
+                      color="yellow" 
+                    />
+                    <CyberStatCard 
+                      icon={<CheckCircle className="w-5 h-5" />} 
+                      label="Overall" 
+                      value={`${run.scores.overall}%`} 
+                      color="cyan" 
+                    />
+                    <CyberStatCard 
+                      icon={<Target className="w-5 h-5" />} 
+                      label="Complete" 
+                      value={`${run.scores.field_completeness}%`} 
+                      color="green" 
+                    />
+                    <CyberStatCard 
+                      icon={<CheckCircle className="w-5 h-5" />} 
+                      label="Structure" 
+                      value={`${run.scores.structure_adherence}%`} 
+                      color="purple" 
+                    />
                   </div>
                 </div>
 
                 <div className="p-6 max-h-[65vh] overflow-y-auto bg-gray-950">
-                  {stage === 'metadata' && <MetadataView run={run} onCopy={handleCopy} copied={copied} />}
-                  {stage === 'gpt-input' && <GPTInputView run={run} onCopy={handleCopy} copied={copied} />}
-                  {stage === 'gpt-output' && <GPTOutputView run={run} onCopy={handleCopy} copied={copied} />}
-                  {stage === 'mistral-input' && <MistralInputView run={run} onCopy={handleCopy} copied={copied} />}
-                  {stage === 'mistral-output' && <MistralOutputView run={run} onCopy={handleCopy} copied={copied} />}
+                  {stage === 'metadata' && <MetadataView run={run} />}
+                  {stage === 'gpt-input' && <GPTInputView run={run} />}
+                  {stage === 'gpt-output' && <GPTOutputView run={run} />}
+                  {stage === 'mistral-input' && <MistralInputView run={run} />}
+                  {stage === 'mistral-output' && <MistralOutputView run={run} />}
                 </div>
 
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-purple-400 to-transparent" />
+                <div className="relative border-t-2 border-cyan-900/50 bg-gradient-to-b from-gray-950 to-gray-900 p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs text-gray-500 font-mono">
+                      Model: {run.cron_data.modell} • Status: {run.meta.success ? '✅ SUCCESS' : '❌ FAILED'}
+                    </div>
+                    <motion.button
+                      onClick={onClose}
+                      className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-bold rounded-lg hover:from-cyan-400 hover:to-purple-400 transition-all"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Close
+                    </motion.button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>

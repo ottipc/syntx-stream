@@ -55,16 +55,16 @@ export const useStreamStore = create<StreamStore>((set, get) => ({
         return false;
       }
       
-      // Drift range filter
-      if (filters.driftMin !== undefined && run.result.drift < filters.driftMin) {
+      // Score range filter (changed from drift)
+      if (filters.scoreMin !== undefined && run.scores.overall < filters.scoreMin) {
         return false;
       }
-      if (filters.driftMax !== undefined && run.result.drift > filters.driftMax) {
+      if (filters.scoreMax !== undefined && run.scores.overall > filters.scoreMax) {
         return false;
       }
       
-      // Status filter
-      if (filters.status && run.result.status !== filters.status) {
+      // Status filter (changed to meta.success)
+      if (filters.status !== undefined && run.meta.success !== filters.status) {
         return false;
       }
       

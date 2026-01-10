@@ -92,8 +92,8 @@ export function StreamRow({ run, index, onClick }: StreamRowProps) {
             {run.stages?.mistral_output?.substring(0, 70) || 'N/A'}...
           </div>
           <div className="flex items-center gap-2">
-            <Badge label="Q" value={run.result.avg_quality} />
-            <Badge label="D" value={`${(run.result.drift * 100).toFixed(0)}%`} />
+            <Badge label="Overall" value={`${run.scores.overall}%`} />
+            <Badge label="Complete" value={`${run.scores.field_completeness}%`} />
           </div>
         </>
       ),
@@ -114,7 +114,7 @@ export function StreamRow({ run, index, onClick }: StreamRowProps) {
         transition={{ delay: index * 0.03 }}
       >
         {/* Neural Background */}
-        <NeuralBackground quality={run.result.avg_quality} />
+        <NeuralBackground quality={run.scores.overall} />
 
         {stages.map((stage, i) => (
           <div key={stage.id} className="flex items-center gap-3">
@@ -126,7 +126,7 @@ export function StreamRow({ run, index, onClick }: StreamRowProps) {
             </StageBox>
             
             {i < stages.length - 1 && (
-              <AnimatedStream quality={run.result.avg_quality} />
+              <AnimatedStream quality={run.scores.overall} />
             )}
           </div>
         ))}

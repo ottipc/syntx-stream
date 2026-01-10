@@ -1,17 +1,17 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { CalibrationResult } from '@/types/calibrax';
+import type { CalibrationRun } from '@/types/calibrax';
 
 interface NodeMistralProps {
-  result: CalibrationResult;
+  run: CalibrationRun;
   onClick?: () => void;
 }
 
-export function NodeMistral({ result, onClick }: NodeMistralProps) {
-  const duration = (result.duration_ms / 1000).toFixed(1);
-  const isCompleted = result.status === 'completed';
-  const hasHighQuality = result.avg_quality >= 90;
+export function NodeMistral({ run, onClick }: NodeMistralProps) {
+  const duration = (run.meta.duration_ms / 1000).toFixed(1);
+  const isCompleted = run.meta.success;
+  const hasHighQuality = run.scores.overall >= 90;
 
   return (
     <motion.div
@@ -50,45 +50,45 @@ export function NodeMistral({ result, onClick }: NodeMistralProps) {
         {/* Stats */}
         <div className="space-y-1.5 text-xs mb-3">
           <div className="flex items-center justify-between">
-            <span className="text-gray-400">Generated:</span>
-            <span className="text-cyan-300 font-mono font-bold">{result.generated}</span>
+            <span className="text-gray-400">Model:</span>
+            <span className="text-cyan-300 font-mono font-bold">{run.cron_data.modell}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-400">Failed:</span>
-            <span className="text-cyan-300 font-mono">{result.failed}</span>
+            <span className="text-gray-400">Fields:</span>
+            <span className="text-cyan-300 font-mono">{Object.keys(run.cron_data.felder).length}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-400">Cost:</span>
-            <span className="text-yellow-400 font-mono">${result.cost.toFixed(4)}</span>
+            <span className="text-gray-400">Retries:</span>
+            <span className="text-yellow-400 font-mono">{run.meta.retry_count}</span>
           </div>
         </div>
         
         {/* Score Tags */}
         <div className="flex items-center gap-2">
           <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${
-            result.avg_quality >= 90 ? 'bg-green-900/30 border border-green-500/30' :
-            result.avg_quality >= 70 ? 'bg-yellow-900/30 border border-yellow-500/30' :
+            run.scores.overall >= 80 ? 'bg-green-900/30 border border-green-500/30' :
+            run.scores.overall >= 50 ? 'bg-yellow-900/30 border border-yellow-500/30' :
             'bg-red-900/30 border border-red-500/30'
           }`}>
-            <span className="text-[10px] text-gray-400">Q:</span>
+            <span className="text-[10px] text-gray-400">Overall:</span>
             <span className={`text-sm font-bold ${
-              result.avg_quality >= 90 ? 'text-green-400' :
-              result.avg_quality >= 70 ? 'text-yellow-400' :
+              run.scores.overall >= 80 ? 'text-green-400' :
+              run.scores.overall >= 50 ? 'text-yellow-400' :
               'text-red-400'
-            }`}>{result.avg_quality}</span>
+            }`}>{run.scores.overall}%</span>
           </div>
           
           <div className={`flex items-center gap-1.5 px-2 py-1 rounded-md ${
-            result.drift < 0.1 ? 'bg-green-900/30 border border-green-500/30' :
-            result.drift < 0.2 ? 'bg-yellow-900/30 border border-yellow-500/30' :
+            run.scores.field_completeness >= 80 ? 'bg-green-900/30 border border-green-500/30' :
+            run.scores.field_completeness >= 50 ? 'bg-yellow-900/30 border border-yellow-500/30' :
             'bg-red-900/30 border border-red-500/30'
           }`}>
-            <span className="text-[10px] text-gray-400">D:</span>
+            <span className="text-[10px] text-gray-400">Complete:</span>
             <span className={`text-sm font-bold ${
-              result.drift < 0.1 ? 'text-green-400' :
-              result.drift < 0.2 ? 'text-yellow-400' :
+              run.scores.field_completeness >= 80 ? 'text-green-400' :
+              run.scores.field_completeness >= 50 ? 'text-yellow-400' :
               'text-red-400'
-            }`}>{(result.drift * 100).toFixed(1)}%</span>
+            }`}>{run.scores.field_completeness}%</span>
           </div>
           
           {isCompleted && <span className="ml-auto text-green-400 text-lg">●</span>}

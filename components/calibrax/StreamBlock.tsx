@@ -69,7 +69,7 @@ export function StreamBlock({ run, index, onClick }: StreamBlockProps) {
       
       {/* Score Badge */}
       <div className="ml-auto">
-        <ScoreBadge quality={run.result.avg_quality} drift={run.result.drift} />
+        <ScoreBadge overall={run.scores.overall} completeness={run.scores.field_completeness} />
       </div>
     </motion.div>
   );
@@ -106,18 +106,18 @@ function Arrow() {
   );
 }
 
-function ScoreBadge({ quality, drift }: { quality: number; drift: number }) {
-  const driftColor = drift < 0.1 ? 'text-green-400' : drift < 0.2 ? 'text-yellow-400' : 'text-red-400';
+function ScoreBadge({ overall, completeness }: { overall: number; completeness: number }) {
+  const overallColor = overall >= 80 ? 'text-green-400' : overall >= 50 ? 'text-yellow-400' : 'text-red-400';
   
   return (
     <div className="flex items-center gap-3">
       <div className="text-center">
-        <p className="text-xs text-gray-500">Quality</p>
-        <p className="text-lg font-bold text-cyan-400">{quality}</p>
+        <p className="text-xs text-gray-500">Overall</p>
+        <p className={`text-lg font-bold ${overallColor}`}>{overall}%</p>
       </div>
       <div className="text-center">
-        <p className="text-xs text-gray-500">Drift</p>
-        <p className={`text-lg font-bold ${driftColor}`}>{(drift * 100).toFixed(1)}%</p>
+        <p className="text-xs text-gray-500">Complete</p>
+        <p className="text-lg font-bold text-cyan-400">{completeness}%</p>
       </div>
     </div>
   );

@@ -7,8 +7,8 @@ import { DataCard } from '../ui/DataCard';
 
 interface MistralOutputViewProps {
   run: CalibrationRun;
-  onCopy: (text: string) => void;
-  copied: boolean;
+  onCopy?: (text: string) => void;
+  copied?: boolean;
 }
 
 export function MistralOutputView({ run, onCopy, copied }: MistralOutputViewProps) {
@@ -18,7 +18,7 @@ export function MistralOutputView({ run, onCopy, copied }: MistralOutputViewProp
         title="Full Response" 
         icon="🌊" 
         action={
-          <button onClick={() => onCopy(run.stages?.mistral_output || '')} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+          <button onClick={() => onCopy?.(run.stages?.mistral_output || '')} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
             {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-400" />}
           </button>
         }
