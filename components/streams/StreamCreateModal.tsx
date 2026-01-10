@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Zap, Brain, Clock, Globe, Dna, Save, Calendar } from 'lucide-react';
+import { X, Zap, Brain, Clock, Globe, Dna, Plus, Calendar } from 'lucide-react';
 import { useCronStreamStore } from '@/lib/stores/cron-stream-store';
 import type { StromCreateData } from '@/types/strom';
-import { SuccessToast } from '@/components/syntx/SuccessToast';
+import { NeuroResultDisplay } from '@/components/birth-field';
 
 interface StreamCreateModalProps {
   isOpen: boolean;
@@ -25,12 +25,14 @@ const DAYS = [
 export function StreamCreateModal({ isOpen, onClose }: StreamCreateModalProps) {
   const { createStream } = useCronStreamStore();
   const [loading, setLoading] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const [resultSuccess, setResultSuccess] = useState(false);
+  const [resultMessage, setResultMessage] = useState('');
   
   const [name, setName] = useState('');
   const [modell, setModell] = useState('gpt-4o');
   const [selectedDays, setSelectedDays] = useState<number[]>([1, 2, 3, 4, 5]);
-  const [hour, setHour] = useState(8);
+  const [hour, setHour] = useState(9);
   const [minute, setMinute] = useState(0);
   const [sprachen, setSprachen] = useState<string[]>(['de']);
   const [styles, setStyles] = useState<string[]>(['technisch']);
@@ -63,43 +65,48 @@ export function StreamCreateModal({ isOpen, onClose }: StreamCreateModalProps) {
     setLoading(true);
     
     try {
+      const muster = name.toLowerCase().replace(/\s+/g, '_');
+      
       const formData: StromCreateData = {
         name,
+        muster,
         zeitplan: generateCron(),
         modell,
-        felder_topics: {
-          systemstruktur: 0.7,
-          humansprache: 0.5,
-        },
+        felder_topics: { systemstruktur: 0.7, humansprache: 0.5 },
         styles,
         sprachen,
         aktiv: true,
       };
       
-      await createStream(formData);
+      const result = await createStream(formData);
       
-      // Show success toast
-      setShowSuccess(true);
+      setResultSuccess(result.success);
+      setResultMessage(result.message);
+      setShowResult(true);
       
-      // Reset form
-      setName('');
-      setModell('gpt-4o');
-      setSelectedDays([1, 2, 3, 4, 5]);
-      setHour(8);
-      setMinute(0);
-      setSprachen(['de']);
-      setStyles(['technisch']);
-      
-      // Close modal after short delay
-      setTimeout(() => {
-        onClose();
-        setShowSuccess(false);
-      }, 1500);
+      if (result.success) {
+        // Reset form
+        setName('');
+        setSelectedDays([1, 2, 3, 4, 5]);
+        setHour(9);
+        setMinute(0);
+        setSprachen(['de']);
+        setStyles(['technisch']);
+      }
       
     } catch (error) {
-      console.error('Failed to create stream:', error);
+      setResultSuccess(false);
+      setResultMessage((error as Error).message);
+      setShowResult(true);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResultClose = () => {
+    setShowResult(false);
+    if (resultSuccess) {
+      onClose();
     }
   };
 
@@ -122,119 +129,210 @@ export function StreamCreateModal({ isOpen, onClose }: StreamCreateModalProps) {
 
   return (
     <>
-      <SuccessToast
-        isVisible={showSuccess}
-        message={`Stream "${name}" created successfully! 🌊⚡`}
-        onClose={() => setShowSuccess(false)}
-      />
-      
       <AnimatePresence>
         {isOpen && (
-          <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            onClick={onClose}
+          >
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={onClose}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-            />
-
-            <div className="fixed inset-0 z-50 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9, rotateX: 10 }}
-                  animate={{ opacity: 1, scale: 1, rotateX: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, rotateX: 10 }}
-                  transition={{ type: "spring", duration: 0.5 }}
-                  className="relative w-full max-w-3xl bg-slate-950 rounded-2xl border border-cyan-500/30 shadow-2xl shadow-cyan-500/20 overflow-hidden my-8"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-2xl bg-slate-950/95 rounded-3xl border border-cyan-500/30 shadow-2xl overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex items-center gap-4 p-6 border-b border-slate-800">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center">
+                  <Plus className="w-7 h-7 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-2xl font-black text-cyan-400">Create Neural Stream</h2>
+                  <p className="text-sm text-slate-400">Initialize new field resonance flow</p>
+                </div>
+                <button
+                  onClick={onClose}
+                  className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  {/* Keep existing modal content... truncated for brevity */}
-                  {/* Use the exact same structure as before but with success toast */}
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(6,182,212,0.15),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(168,85,247,0.1),transparent_50%)]" />
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:40px_40px] opacity-20" />
-                  
-                  {[...Array(8)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 bg-cyan-400 rounded-full"
-                      style={{
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                      }}
-                      animate={{
-                        y: [0, -20, 0],
-                        opacity: [0.3, 0.8, 0.3],
-                      }}
-                      transition={{
-                        duration: 3 + Math.random() * 2,
-                        repeat: Infinity,
-                        delay: Math.random() * 2,
-                      }}
-                    />
-                  ))}
-                  
-                  <div className="relative p-8">
-                    <div className="flex items-start justify-between mb-8">
-                      <div className="flex items-center gap-4">
-                        <motion.div
-                          animate={{ 
-                            scale: [1, 1.2, 1],
-                            rotate: [0, 5, -5, 0]
-                          }}
-                          transition={{ duration: 3, repeat: Infinity }}
-                          className="w-14 h-14 rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/50"
-                        >
-                          <Zap className="w-7 h-7 text-white" />
-                        </motion.div>
-                        <div>
-                          <h2 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400">
-                            Neural Stream Console
-                          </h2>
-                          <p className="text-sm text-slate-400 mt-1">Configure field resonance flow</p>
-                        </div>
-                      </div>
-                      
-                      <motion.button
-                        whileHover={{ scale: 1.1, rotate: 90 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={onClose}
-                        className="p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
-                      >
-                        <X className="w-5 h-5 text-slate-400" />
-                      </motion.button>
-                    </div>
-
-                    <form onSubmit={handleSubmit} className="space-y-8">
-                      {/* Rest of form - keeping it short for terminal output */}
-                      {/* Include all the same fields as before */}
-                      
-                      <motion.div className="flex gap-4 pt-6 border-t border-slate-800">
-                        <button
-                          type="button"
-                          onClick={onClose}
-                          className="flex-1 px-6 py-4 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors font-semibold"
-                        >
-                          Cancel
-                        </button>
-                        <motion.button
-                          type="submit"
-                          disabled={loading}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex-1 px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all flex items-center justify-center gap-3 disabled:opacity-50 font-bold shadow-lg shadow-cyan-500/30"
-                        >
-                          <Save className="w-5 h-5" />
-                          {loading ? 'Activating Stream...' : 'Activate Stream'}
-                        </motion.button>
-                      </motion.div>
-                    </form>
-                  </div>
-                </motion.div>
+                  <X className="w-5 h-5 text-slate-400" />
+                </button>
               </div>
-            </div>
-          </>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+                {/* Stream Identity */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-cyan-400 mb-2">
+                    <Brain className="w-4 h-4" />
+                    STREAM IDENTITY
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter stream name..."
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:border-cyan-500 focus:outline-none"
+                    required
+                  />
+                </div>
+
+                {/* Model */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-cyan-400 mb-2">
+                    <Zap className="w-4 h-4" />
+                    MODEL
+                  </label>
+                  <select
+                    value={modell}
+                    onChange={(e) => setModell(e.target.value)}
+                    className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:border-cyan-500 focus:outline-none"
+                  >
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="claude-sonnet-4">Claude Sonnet 4</option>
+                  </select>
+                </div>
+
+                {/* Temporal Matrix */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-cyan-400 mb-3">
+                    <Calendar className="w-4 h-4" />
+                    TEMPORAL MATRIX
+                  </label>
+                  
+                  {/* Days */}
+                  <div className="grid grid-cols-7 gap-2 mb-4">
+                    {DAYS.map((day) => (
+                      <button
+                        key={day.key}
+                        type="button"
+                        onClick={() => toggleDay(day.key)}
+                        className={`aspect-square rounded-xl border-2 font-bold text-sm transition-all ${getColorClasses(
+                          day.color,
+                          selectedDays.includes(day.key)
+                        )}`}
+                      >
+                        {day.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Time */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">Hour</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="23"
+                        value={hour}
+                        onChange={(e) => setHour(parseInt(e.target.value))}
+                        className="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">Minute</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="59"
+                        value={minute}
+                        onChange={(e) => setMinute(parseInt(e.target.value))}
+                        className="w-full px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-2 text-xs text-slate-500 font-mono">
+                    Cron: {generateCron()}
+                  </div>
+                </div>
+
+                {/* Languages */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-cyan-400 mb-2">
+                    <Globe className="w-4 h-4" />
+                    LANGUAGE RESONANCE
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
+                    {['DE', 'EN', 'ES', 'FR'].map((lang) => (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => toggleLanguage(lang.toLowerCase())}
+                        className={`px-4 py-2 rounded-lg font-bold text-sm transition-all ${
+                          sprachen.includes(lang.toLowerCase())
+                            ? 'bg-cyan-600 text-white'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Styles */}
+                <div>
+                  <label className="flex items-center gap-2 text-sm font-bold text-cyan-400 mb-2">
+                    <Dna className="w-4 h-4" />
+                    STYLE ALCHEMY
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
+                    {['technisch', 'akademisch', 'literarisch', 'poetisch'].map((style) => (
+                      <button
+                        key={style}
+                        type="button"
+                        onClick={() => toggleStyle(style)}
+                        className={`px-4 py-2 rounded-full font-medium text-sm transition-all ${
+                          styles.includes(style)
+                            ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white'
+                            : 'bg-slate-800 text-slate-400'
+                        }`}
+                      >
+                        {style}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 py-3 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-bold"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 text-white hover:from-cyan-700 hover:to-blue-700 font-bold flex items-center justify-center gap-2"
+                  >
+                    <Plus className="w-5 h-5" />
+                    {loading ? 'Creating...' : 'Create Stream'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Result Display */}
+      <NeuroResultDisplay
+        show={showResult}
+        success={resultSuccess}
+        operation="create"
+        streamName={name}
+        message={resultMessage}
+        onClose={handleResultClose}
+      />
     </>
   );
 }

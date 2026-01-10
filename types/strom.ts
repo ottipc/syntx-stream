@@ -14,6 +14,7 @@ export interface Strom {
 
 export interface StromCreateData {
   name: string
+  muster: string
   zeitplan: string
   modell: string
   felder_topics: Record<string, number>
@@ -26,6 +27,7 @@ export interface StromConfig extends Strom {}
 
 export interface StromUpdateData {
   name?: string
+  muster?: string
   zeitplan?: string
   modell?: string
   felder_topics?: Record<string, number>
